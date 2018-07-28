@@ -1,15 +1,25 @@
-<?php 
-require_once("conn/connApts.php"); 
-$IDapt = $_GET['IDapt'];
-$query = "SELECT * FROM apartments, buildings, images WHERE apartments.bldgID = buildings.IDbldg AND IDapt = '$IDapt';";
-$imageQuery = "SELECT * FROM apartments, images WHERE apartments.IDapt = images.foreignID AND IDapt = '$IDapt' AND catID = 1;";
-$result = mysqli_query($conn, $query);
-$imageResult = mysqli_query($conn, $imageQuery);
-$row = mysqli_fetch_array($result);
-$imageRow = mysqli_fetch_array($imageResult);
-$row_cnt = $imageResult->num_rows;
-echo mysqli_error($conn);
+<?php
+
+    require_once("conn/connApts.php"); 
+
+    $IDapt = $_GET['IDapt']; // From the URL
+
+    // ##** FIRST QUERY : JUST THE ONE APT'S DATA
+    $query = "SELECT * FROM apartments, buildings 
+    WHERE apartments.bldgID = buildings.IDbldg 
+    AND IDapt = '$IDapt'";
+    $result = mysqli_query($conn, $query);
+    $row = mysqli_fetch_array($result);
+
+    // **## SECOND QUERY : MULTIPLE IMAGES FOR THIS ONE APT **##
+    // query the images table for all images for this ONE apt
+    $query2 = "SELECT * FROM images WHERE catID = 1
+            AND foreignID = '$IDapt'";
+    $result2 = mysqli_query($conn, $query2);
+    $row2 = mysqli_fetch_array($result2); // first pic == "Big Pic"
+
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,16 +40,27 @@ echo mysqli_error($conn);
             
         </tr>
         <tr>
-            <td rowspan="2">
-                <img width="200px" id="mainPic" src="images/propPics/<?php echo $imageRow['imgName'] == '' ? "SohoLoftsApt2.jpg": $imageRow['imgName']; ?>">
-                <?php if($row_cnt > 1){ 
-                    echo "<br>";
-                    for($i = 1; $i < $row_cnt; $i++){
-                        $imageRow = mysqli_fetch_array($imageResult);
-                        echo '<img onclick="switchImage()" width="30px" src="images/propPics/' . $imageRow['imgName'] . '" id="' . $imageRow['imgName'] . '">';
-                    }
-                }; ?>
+            <td rowspan="2" style="max-width:385px">
+          
+                <!-- apt slideshow big pic -->
+                <img src="images/propPics/<?php echo $row2['imgName']; ?>" id="bigPic">
+
+                <div id="thumbs" style="background-color:#555; padding:5px; 
+                                 overflow-x:scroll; max-height:100px; white-space:nowrap">
+
+                    <img src="images/propPics/<?php echo $row2['imgName']; ?>" style="width:70px; margin:5px" onclick="swapPic()">
+
+                    <!-- apt slideshow thumbnails -->
+                    <?php while($row2=mysqli_fetch_array($result2)) { ?>
+
+                        <img src="images/propPics/<?php echo $row2['imgName']; ?>" style="width:70px; margin:5px" onclick="swapPic()">
+
+                    <?php } ?>
+
+                </div><!-- close thumbs -->
+
             </td>
+            
             <td>Square Feet: <?php echo $row['sqft']; ?></td>
             <td>Rent: $<?php echo $row['rent']; ?></td>
         </tr>
@@ -59,13 +80,19 @@ echo mysqli_error($conn);
 		function goBack() {
 			window.history.back();
 		}
-        function switchImage() {
-            let mainPic = document.getElementById('mainPic');
-            let mainPicSrc = mainPic.src;
-            let smallSrc = event.target.src;
-            mainPic.src = smallSrc;
-            event.target.src = mainPicSrc;
+        
+        // get the main slideshow pic
+        const bigPic = document.getElementById('bigPic');
+        
+        // Yes! You can pass PHP vars to JS vars:
+        // alert('<?php // echo $row['email']; ?>');
+              
+        // slideshow functionality
+        function swapPic() { // runs on any thumb click
+            // take the src of little thumb and apply it to big pic
+            bigPic.src = event.target.src;
         }
+        
     </script>
 </body>
 </html>

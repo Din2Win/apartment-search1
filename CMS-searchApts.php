@@ -10,7 +10,7 @@
 <html lang="en-us">
     
 <head>
-    <title>Apartment Search</title>
+    <title>CMS Apartment Search</title>
     <link href="css/apts.css" rel="stylesheet">
 </head>
 
@@ -22,8 +22,14 @@
 
         <!-- We use "get" here because we are only GETting information -->
  
-        <form method="get" action="searchAptsProc.php" onsubmit="return validateMinMaxRent()">
+        <form method="get" action="CMS-searchAptsProc.php" onsubmit="return validateMinMaxRent()">
             
+            <!-- quick search -->
+            <p style="background-color:yellow; padding:5px; font-weight:bold">
+                Quick Search by Apt ID: <input type="number" name="IDapt" id="IDapt" style="width:75px">
+                <button style="background-color:aqua; padding:5px; font-weight:bold">GO</button>
+            </p>
+
             <!-- keyword search -->
             <p>Search: <input type="search" name="search" id="search"></p>
             

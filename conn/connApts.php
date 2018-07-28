@@ -6,7 +6,8 @@ $conn = mysqli_connect('localhost', 'root', 'mysql') or die("Couldn't connect to
 
 // 3.) connect to database
 
-mysqli_select_db($conn, 'LoftyHeights2');
+mysqli_select_db($conn, 'loftyheights3') or die("Couldn't connect to Database");
+
 
 
 ?>

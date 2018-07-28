@@ -1,6 +1,9 @@
 <?php 
 
-// 1.) there is no form to process, so skip the POST / GET vars part
+// 1.) Start w/ Quick Search
+$IDapt = $_GET['IDapt']; // Primary Key entered by user
+ 
+// if user goes beyond quick search:
 $bdrms = $_GET['bdrms'];
 $baths = $_GET['baths'];
 $minRent = $_GET['minRent'];
@@ -33,6 +36,11 @@ $query = "SELECT * from apartments, buildings, neighborhoods
 WHERE apartments.bldgID = buildings.IDbldg 
 AND buildings.hoodID = neighborhoods.IDhood 
 AND rent BETWEEN '$minRent' AND '$maxRent'";
+
+// concat query for quick search
+if($IDapt != "") { // if ID apt not left blank
+    $query .= " AND IDapt='$IDapt'"; // only ONE result
+}
 
 // concat query if user chose a bldg from dynamic bldg menu
 if($bldgID != -1) { // if user chose a bldg (not ANY)
@@ -183,7 +191,7 @@ $result = mysqli_query($conn, $query_limit);  // the result will be an array of 
                          <!-- THIRD and FINAL NPFL CODE BLOCK contains HTML & PHP mix -->
 			<!-- NPFL CODE BLOCK 3 of 3 START -->
 
-                  <a href="searchApts.php">New Search</a>
+                  <a href="CMS-searchApts.php">New Search</a>
 
                   &nbsp; &nbsp; &nbsp; &nbsp; | 
                   &nbsp; &nbsp; &nbsp;  &nbsp;  &nbsp;
@@ -264,7 +272,7 @@ $result = mysqli_query($conn, $query_limit);  // the result will be an array of 
               <td><?php echo $row['IDapt']; ?></td>
               <td>
                   <?php 
-                      echo '<a href="aptDetails.php?IDapt=' 
+                      echo '<a href="CMS-aptDetails.php?IDapt=' 
                           . $row['IDapt'] . '">' 
                           . $row['apt'] . '</a>';
                   ?>
@@ -273,7 +281,7 @@ $result = mysqli_query($conn, $query_limit);  // the result will be an array of 
               <td>
               
             <?php 
-              echo '<a href="bldgDetails.php?bldgID=' 
+              echo '<a href="CMS-bldgDetails.php?bldgID=' 
                   . $row['bldgID'] . '">' 
                   . $row['bldgName'] . '</a>';
             ?>
